@@ -56,6 +56,8 @@ ignore = [
     "D205", # blank-line-after-summary
     "D213", # multi-line-summary-second-line
     "D401", # non-imperative-mood
+    "DOC201", # docstring-missing-returns
+    "DOC402", # docstring-missing-yelds
     "DOC501", # docstring-missing-exception
     "FAST002", # fast-api-non-annotated-dependency
     "INP001", # implicit-namespace-package

@@ -1,0 +1,46 @@
+from typing import TYPE_CHECKING
+
+from pydantic import UUID4, BaseModel, Field, PastDatetime
+
+from src.utils.enums import Status
+
+if TYPE_CHECKING:
+    from src.schemas.user import UserDB
+
+
+class TaskID(BaseModel):
+    id: UUID4 = Field(..., description='Unique identifier of the task')
+
+
+class UpdateTaskRequest(BaseModel):
+    title: str | None = Field(None, min_length=3, max_length=255, description='Title of the task')
+    description: str | None = Field(None, description='Description of the task')
+    status: Status | None = Field(None, description='Status of the task')
+    author_id: UUID4 | None = Field(None, description='ID of the user who created the task')
+    assignee_id: UUID4 | None = Field(None, description='ID of the user who assigned the task')
+
+
+class CreateTaskRequest(UpdateTaskRequest):
+    title: str = Field(..., min_length=3, max_length=255, description='Title of the task')
+    status: Status = Field(..., description='Status of the task')
+    author_id: UUID4 = Field(..., description='ID of the user who created the task')
+
+
+class TaskDB(TaskID, CreateTaskRequest):
+    created_at: PastDatetime | None = Field(None, description='Date the task was created')
+    watchers: list['UserDB'] | None = Field(None, description='List of users who watched the task')
+    executors: list['UserDB'] | None = Field(None, description='List of users who execute the task')
+
+
+class FilterTaskRequest(BaseModel):
+    title: str | None = Field(None, min_length=3, max_length=255, description='Title of the task')
+    status: Status | None = Field(None, description='Status of the task')
+    author_id: UUID4 | None = Field(None, description='ID of the user who created the task')
+
+
+class TaskResponse(BaseModel):
+    payload: TaskDB = Field(..., description='Task data')
+
+
+class MultiTaskResponse(BaseModel):
+    payload: list[TaskDB] = Field(..., description='List of tasks')

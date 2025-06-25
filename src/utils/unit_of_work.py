@@ -5,13 +5,13 @@ from types import TracebackType
 from typing import Any, Never
 
 from src.database.db import async_session_maker
-from src.repositories import CompanyRepository, UserRepository
+from src.repositories import UserRepository
+from src.repositories.task import TaskRepository
 
 
 class AbstractUnitOfWork(ABC):
     is_open: bool
     user: UserRepository
-    company: CompanyRepository
 
     @abstractmethod
     def __init__(self) -> Never:
@@ -44,8 +44,8 @@ class UnitOfWork(AbstractUnitOfWork):
 
     __slots__ = (
         '_session',
-        'company',
         'is_open',
+        'task',
         'user',
     )
 
@@ -54,8 +54,8 @@ class UnitOfWork(AbstractUnitOfWork):
 
     async def __aenter__(self) -> None:
         self._session = async_session_maker()
-        self.company = CompanyRepository(self._session)
-        self.user = UserRepository(self._session)
+        self.user: UserRepository = UserRepository(self._session)
+        self.task: TaskRepository = TaskRepository(self._session)
         self.is_open = True
 
     async def __aexit__(

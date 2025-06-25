@@ -1,11 +1,12 @@
 import os
 
 from dotenv import find_dotenv, load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import ORJSONResponse
 
 from src.api import router
 from src.metadata import DESCRIPTION, TAG_METADATA, TITLE, VERSION
+from src.schemas.response import BaseErrorResponse
 
 
 def create_fast_api_app() -> FastAPI:
@@ -36,3 +37,15 @@ def create_fast_api_app() -> FastAPI:
 
 
 app = create_fast_api_app()
+
+
+@app.exception_handler(HTTPException)
+def http_exc_handler(_: Request, exc: HTTPException) -> ORJSONResponse:
+    payload = BaseErrorResponse(
+        status=exc.status_code,
+        details=exc.detail,
+    ).model_dump()
+    return ORJSONResponse(
+        status_code=exc.status_code,
+        content=payload,
+    )

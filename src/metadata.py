@@ -1,19 +1,21 @@
+from src.utils.constans import Tags
+
 TAG_METADATA = [
     {
-        'name': 'User | v1',
+        'name': Tags.HEALTHZ,
+        'description': 'Standard health check.',
+    },
+    {
+        'name': Tags.USER_V1,
         'description': 'Operation with user v1.',
     },
     {
-        'name': 'Company | v1',
-        'description': 'Operation with company v1.',
-    },
-    {
-        'name': 'healthz',
-        'description': 'Standard health check.',
+        'name': Tags.TASKS_V1,
+        'description': 'Operation with tasks v1.',
     },
 ]
 
-TITLE = 'FastAPI Onion Architecture'
+TITLE = 'Task 1 - CRUD Task'
 DESCRIPTION = (
     'Implemented on FastAPI.\n\n'
     'Examples taken from the book - https://www.cosmicpython.com/book/chapter_06_uow.html.\n\n'
