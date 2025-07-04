@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING
 
-from pydantic import UUID4, BaseModel, Field, PastDatetime
+from pydantic import UUID4, BaseModel, Field, PastDatetime, model_validator
 
+from src.utils.constans import TASK_UPDATE_VALIDATION_ERROR
 from src.utils.enums import Status
 
 if TYPE_CHECKING:
@@ -18,6 +19,20 @@ class UpdateTaskRequest(BaseModel):
     status: Status | None = Field(None, description='Status of the task')
     author_id: UUID4 | None = Field(None, description='ID of the user who created the task')
     assignee_id: UUID4 | None = Field(None, description='ID of the user who assigned the task')
+
+    @model_validator(mode='after')
+    def ensure_at_least_one_field(self) -> 'UpdateTaskRequest':
+        values = [
+            self.title,
+            self.description,
+            self.status,
+            self.author_id,
+            self.assignee_id,
+        ]
+
+        if all(v is None for v in values):
+            raise ValueError(TASK_UPDATE_VALIDATION_ERROR)
+        return self
 
 
 class CreateTaskRequest(UpdateTaskRequest):

@@ -6,7 +6,7 @@ from collections.abc import AsyncGenerator
 import pytest
 import pytest_asyncio
 import sqlalchemy
-from httpx import AsyncClient
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import Result, sql
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
@@ -126,5 +126,7 @@ def fake_uow(transaction_session: AsyncSession) -> FakeUnitOfWork:
 async def async_client(fake_uow: FakeUnitOfWork) -> AsyncGenerator[AsyncClient, None]:
     """Returns async test client."""
     app.dependency_overrides[UnitOfWork] = lambda: fake_uow
-    async with AsyncClient(app=app, base_url='http://test') as ac:
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url='http://test') as ac:
         yield ac

@@ -22,7 +22,6 @@ class TestSqlAlchemyRepository:
     def __get_sql_rep(self, session: AsyncSession) -> SqlAlchemyRepository:
         return self._SqlAlchemyRepository(session)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one(
         self,
         transaction_session: AsyncSession,
@@ -36,7 +35,6 @@ class TestSqlAlchemyRepository:
         users_in_db: Sequence[UserModel] = await get_users()
         assert compare_dicts_and_db_models(users_in_db, [first_user], UserDB)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one_and_get_id(
         self,
         transaction_session: AsyncSession,
@@ -51,7 +49,6 @@ class TestSqlAlchemyRepository:
         users_in_db: Sequence[UserModel] = await get_users()
         assert compare_dicts_and_db_models(users_in_db, [first_user], UserDB)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one_and_get_obj(
         self,
         transaction_session: AsyncSession,

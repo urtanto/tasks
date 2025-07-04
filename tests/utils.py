@@ -1,5 +1,6 @@
 """Contains helper functions for tests."""
-
+import enum
+import uuid
 from collections.abc import Callable, Iterable, Sequence
 from contextlib import AbstractContextManager, nullcontext
 from typing import Any, TypeVar
@@ -91,3 +92,16 @@ def prepare_payload(response: Response, exclude: Sequence[str] | None = None) ->
         payload.pop(key, None)
 
     return payload
+
+
+def json_serializable(obj: Any) -> Any:
+    """Рекурсивно преобразует obj в структуру, пригодную для json."""
+    if isinstance(obj, dict):
+        return {key: json_serializable(val) for key, val in obj.items()}
+    if isinstance(obj, list | tuple | set):
+        return [json_serializable(val) for val in obj]
+    if isinstance(obj, enum.Enum):
+        return obj.value
+    if isinstance(obj, uuid.UUID):
+        return str(obj)
+    return obj

@@ -1,9 +1,9 @@
 """The package contains various data used in tests."""
 
 __all__ = [
-    'CompanyService',
     'FakeBaseService',
     'FakeUnitOfWork',
+    'TaskService',
     'UserService',
     'db_mocks',
     'testing_cases',
@@ -13,8 +13,8 @@ from types import TracebackType
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.api.v1.services import CompanyService, UserService
-from src.repositories import CompanyRepository, UserRepository
+from src.api.v1.services import TaskService, UserService
+from src.repositories import TaskRepository, UserRepository
 from src.utils.service import BaseService
 from src.utils.unit_of_work import UnitOfWork
 from tests.fixtures import db_mocks, testing_cases
@@ -30,7 +30,7 @@ class FakeUnitOfWork(UnitOfWork):
         self._session = session
 
     async def __aenter__(self) -> None:
-        self.company = CompanyRepository(self._session)
+        self.task = TaskRepository(self._session)
         self.user = UserRepository(self._session)
 
     async def __aexit__(

@@ -22,7 +22,6 @@ class TestBaseService:
     def __get_service(self, session: AsyncSession) -> FakeBaseService:
         return self._BaseService(session)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one(
         self,
         transaction_session: AsyncSession,
@@ -35,7 +34,6 @@ class TestBaseService:
         users_in_db: Sequence[UserModel] = await get_users()
         assert compare_dicts_and_db_models(users_in_db, [first_user], UserDB)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one_and_get_id(
         self,
         transaction_session: AsyncSession,
@@ -49,7 +47,6 @@ class TestBaseService:
         users_in_db: Sequence[UserModel] = await get_users()
         assert compare_dicts_and_db_models(users_in_db, [first_user], UserDB)
 
-    @pytest.mark.usefixtures('setup_companies')
     async def test_add_one_and_get_obj(
         self,
         transaction_session: AsyncSession,

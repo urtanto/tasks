@@ -1,6 +1,9 @@
-from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_404_NOT_FOUND, HTTP_422_UNPROCESSABLE_ENTITY
+import uuid
+
+from starlette.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_422_UNPROCESSABLE_ENTITY
 
 from tests.constants import BASE_ENDPOINT_URL
+from tests.fixtures.db_mocks import USERS
 from tests.utils import RequestTestCase
 
 TEST_USER_ROUTE_CREATE_PARAMS: list[RequestTestCase] = [
@@ -8,17 +11,13 @@ TEST_USER_ROUTE_CREATE_PARAMS: list[RequestTestCase] = [
         url=f'{BASE_ENDPOINT_URL}/user/',
         headers={},
         data={
-            'first_name': 'Ivan',
-            'last_name': 'Ivanov',
-            'middle_name': 'Ivanovich',
-            'company_id': 'b04e55bd-8431-4edd-8eb4-632099c0ea65',
+            'full_name': 'Test User',
+            'email': 'test@test.com',
         },
         expected_status=HTTP_201_CREATED,
         expected_data={
-            'first_name': 'Ivan',
-            'last_name': 'Ivanov',
-            'middle_name': 'Ivanovich',
-            'company_id': 'b04e55bd-8431-4edd-8eb4-632099c0ea65',
+            'full_name': 'Test User',
+            'email': 'test@test.com',
         },
         description='Positive case',
     ),
@@ -34,43 +33,29 @@ TEST_USER_ROUTE_CREATE_PARAMS: list[RequestTestCase] = [
         url=f'{BASE_ENDPOINT_URL}/user/',
         headers={},
         data={
-            'first_name': 'Ivan',
-            'last_name': 'Ivanov',
-            'middle_name': 'Ivanovich',
-            'company_id': '00000000-0000-0000-0000-000000000000',
+            'full_name': 'Test User',
+            'email': USERS[0]['email'],
         },
-        expected_status=HTTP_422_UNPROCESSABLE_ENTITY,
+        expected_status=HTTP_400_BAD_REQUEST,
         expected_data={},
-        description='Non-existent company',
+        description='Already exists user with this email',
     ),
 ]
 
-TEST_USER_ROUTE_GET_PARAMS: list[RequestTestCase] = [
+TEST_USER_ROUTE_DELETE_PARAMS: list[RequestTestCase] = [
     RequestTestCase(
-        url=f'{BASE_ENDPOINT_URL}/user/3d3e784f-646a-4ad4-979c-dca5dcea2a28',
+        url=f'{BASE_ENDPOINT_URL}/user/{USERS[0]["id"]}',
         headers={},
-        expected_status=HTTP_200_OK,
-        expected_data={
-            'company_id': 'b04e55bd-8431-4edd-8eb4-632099c0ea65',
-            'first_name': 'Ivan',
-            'id': '3d3e784f-646a-4ad4-979c-dca5dcea2a28',
-            'last_name': 'Ivanov',
-            'middle_name': 'Ivanovich',
-        },
+        data={},
+        expected_status=HTTP_204_NO_CONTENT,
         description='Positive case',
     ),
     RequestTestCase(
-        url=f'{BASE_ENDPOINT_URL}/user/1',
+        url=f'{BASE_ENDPOINT_URL}/user/{uuid.uuid4()}',
         headers={},
-        expected_status=HTTP_422_UNPROCESSABLE_ENTITY,
+        data={},
+        expected_status=HTTP_204_NO_CONTENT,
         expected_data={},
-        description='Not valid user id',
-    ),
-    RequestTestCase(
-        url=f'{BASE_ENDPOINT_URL}/user/4d3e784f-646a-4ad4-979c-dca5dcea2a28',
-        headers={},
-        expected_status=HTTP_404_NOT_FOUND,
-        expected_data={},
-        description='Non-existent user',
+        description='Not valid request body',
     ),
 ]
